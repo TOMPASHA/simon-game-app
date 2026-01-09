@@ -231,6 +231,13 @@ export const CircularSimonBoard: React.FC<CircularSimonBoardProps> = ({
       return;
     }
 
+    // CRITICAL: Only animate if this is a genuinely new round
+    // If we've already animated this round, skip (prevents duplicate animations)
+    if (lastAnimatedRound.current === round) {
+      console.log(`🎨 Skipping - already animated round ${round}`);
+      return;
+    }
+
     // CRITICAL: Capture ALL values at the start to prevent closure issues
     // Store them in variables that won't change during the animation
     // Always use the current props, don't rely on refs that might be stale
@@ -244,9 +251,9 @@ export const CircularSimonBoard: React.FC<CircularSimonBoardProps> = ({
       return;
     }
     
-    // Update refs for tracking
-    sequenceRef.current = sequenceToShow;
+    // Mark this round as animated BEFORE starting animation
     lastAnimatedRound.current = currentRound;
+    sequenceRef.current = sequenceToShow;
     
     console.log(`🎨 Starting sequence animation: Round ${currentRound}, Length: ${sequenceLength}, Sequence:`, sequenceToShow);
     console.log(`🎨 Sequence details:`, {
@@ -321,8 +328,9 @@ export const CircularSimonBoard: React.FC<CircularSimonBoardProps> = ({
       if (timeoutId) clearTimeout(timeoutId);
       setActiveColor(null);
       setSequenceIndex(-1);
+      // Don't reset lastAnimatedRound here - we want to track which round was animated
     };
-  }, [isShowingSequence, sequence, round]); // Added round to dependencies to force reset on new round
+  }, [isShowingSequence, sequence, round]); // Dependencies: re-run when any of these change
 
   // Handle color button click
   const handleColorClick = (color: Color) => {

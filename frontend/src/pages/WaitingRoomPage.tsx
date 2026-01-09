@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useSimonStore } from '../store/simonStore';
 import { socketService } from '../services/socketService';
-import { SimonBoard } from '../components/game/SimonBoard';
+import { CircularSimonBoard } from '../components/game/CircularSimonBoard';
 import { Toast } from '../components/ui/Toast';
 
 export function WaitingRoomPage() {
@@ -259,7 +259,7 @@ export function WaitingRoomPage() {
             </div>
           )}
           
-          <SimonBoard
+          <CircularSimonBoard
             sequence={currentSequence}
             round={currentRound}
             isShowingSequence={isShowingSequence}

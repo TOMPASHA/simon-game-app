@@ -241,8 +241,10 @@ export const CircularSimonBoard: React.FC<CircularSimonBoardProps> = ({
     
     console.log(`🎨 ANIMATION START: Round ${currentRound}, Length: ${sequenceLength}, Colors:`, sequenceToShow);
 
-    const SHOW_DURATION = 800;  // How long each color stays lit (matches sound)
-    const SHOW_GAP = 400;       // Gap between colors (all dark)
+    // CRITICAL: These MUST match backend SIMON_CONSTANTS in game.types.ts
+    // Backend: SHOW_COLOR_DURATION_MS = 600, SHOW_COLOR_GAP_MS = 200
+    const SHOW_DURATION = 600;  // How long each color stays lit
+    const SHOW_GAP = 200;       // Gap between colors (all dark)
 
     let currentIndex = 0;
     let timeoutId: ReturnType<typeof setTimeout>;

@@ -101,13 +101,11 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
   isTimerPulsing,
 }) => {
   const [activeColor, setActiveColor] = useState<Color | null>(null);
-  const [animationIndex, setAnimationIndex] = useState<number>(0);
   
   // Animate sequence when showing
   useEffect(() => {
     if (!isShowingSequence || sequence.length === 0) {
       setActiveColor(null);
-      setAnimationIndex(0);
       return;
     }
     
@@ -129,7 +127,6 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
       
       // Light up the color
       setActiveColor(color);
-      setAnimationIndex(currentIndex);
       
       // Dim after SHOW_DURATION
       setTimeout(() => {
@@ -261,21 +258,17 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
       </div>
       
       {/* Player Sequence Display (Step 2) */}
-      {isInputPhase && (
-        <div className="bg-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3 w-full">
-          <h3 className="text-white text-xs font-semibold mb-1.5 text-center">
-            Your Sequence ({playerSequence.length}/{sequence.length})
-          </h3>
-          <div className="flex justify-center items-center gap-1 min-h-[28px] sm:min-h-[36px] flex-wrap">
-            {playerSequence.length === 0 ? (
-              <span className="text-gray-400 text-xs">Tap colors in order...</span>
-            ) : (
-              playerSequence.map((color, i) => (
-                <span key={i} className="text-xl sm:text-2xl">
-                  {getColorEmoji(color)}
-                </span>
-              ))
-            )}
+      {isInputPhase && playerSequence.length > 0 && (
+        <div className="bg-gray-700 rounded-lg p-2 w-full">
+          <div className="flex justify-center items-center gap-1 min-h-[28px]">
+            {playerSequence.map((color, i) => (
+              <span key={i} className="text-xl sm:text-2xl">
+                {getColorEmoji(color)}
+              </span>
+            ))}
+            <span className="text-gray-400 text-xs ml-2">
+              {playerSequence.length}/{sequence.length}
+            </span>
           </div>
         </div>
       )}
@@ -333,20 +326,6 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
               ? 'Great job! Next round coming...' 
               : 'Better luck next time!'}
           </div>
-        </div>
-      )}
-      
-      {/* Sequence Display (for debugging) */}
-      {isShowingSequence && (
-        <div className="text-center text-gray-400 text-sm">
-          Sequence: {sequence.map((c, i) => (
-            <span 
-              key={i} 
-              className={`mx-1 ${i === animationIndex ? 'font-bold text-white' : ''}`}
-            >
-              {c}
-            </span>
-          ))}
         </div>
       )}
     </div>

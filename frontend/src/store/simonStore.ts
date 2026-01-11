@@ -387,20 +387,42 @@ export const useSimonStore = create<SimonStore>((set, get) => ({
   
   /**
    * Add a color to the player's sequence
+   * Auto-submits when sequence is complete
    */
   addColorToSequence: (color: Color) => {
-    set((state) => {
-      const newPlayerSequence = [...state.playerSequence, color];
-      const canSubmit = newPlayerSequence.length === state.currentSequence.length;
-      
-      return {
-        playerSequence: newPlayerSequence,
-        canSubmit,
-        message: canSubmit 
-          ? '✅ Sequence complete! Click Submit'
-          : `${newPlayerSequence.length} of ${state.currentSequence.length} colors`,
-      };
+    const state = get();
+    const newPlayerSequence = [...state.playerSequence, color];
+    const isComplete = newPlayerSequence.length === state.currentSequence.length;
+    
+    // Check if this color is correct (for immediate feedback)
+    const expectedColor = state.currentSequence[newPlayerSequence.length - 1];
+    const isCorrectSoFar = color === expectedColor;
+    
+    set({
+      playerSequence: newPlayerSequence,
+      canSubmit: isComplete,
+      message: isComplete 
+        ? '⏳ Checking your answer...'
+        : `${newPlayerSequence.length} of ${state.currentSequence.length} colors`,
     });
+    
+    // Auto-submit when sequence is complete
+    if (isComplete) {
+      // Small delay for visual feedback before submitting
+      setTimeout(() => {
+        const currentState = get();
+        if (currentState.isInputPhase && currentState.canSubmit) {
+          // Get gameCode and playerId from URL or auth
+          const urlParams = new URLSearchParams(window.location.search);
+          const gameCode = urlParams.get('code') || localStorage.getItem('gameCode');
+          const playerId = localStorage.getItem('playerId');
+          
+          if (gameCode && playerId) {
+            get().submitSequence(gameCode, playerId);
+          }
+        }
+      }, 300);
+    }
   },
   
   /**

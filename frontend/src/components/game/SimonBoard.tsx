@@ -21,7 +21,7 @@ interface SimonBoardProps {
   canSubmit: boolean;
   lastResult: { isCorrect: boolean; playerName: string } | null;
   onColorClick: (color: Color) => void;
-  onSubmit: () => void;
+  onSubmit?: () => void; // Deprecated - auto-submit handles this now
   disabled?: boolean;
   // Step 3: Timer props
   secondsRemaining: number;
@@ -93,7 +93,6 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
   canSubmit,
   lastResult,
   onColorClick,
-  onSubmit,
   disabled = false,
   secondsRemaining,
   timerColor,
@@ -278,38 +277,11 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
         </div>
       )}
       
-      {/* Submit Button (Step 2) */}
-      {isInputPhase && (
-        <button
-          onClick={() => {
-            if (canSubmit && 'vibrate' in navigator) {
-              navigator.vibrate(100); // Longer vibration for submit
-            }
-            onSubmit();
-          }}
-          disabled={!canSubmit}
-          style={{ touchAction: 'manipulation' }}
-          className={`
-            w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg
-            min-h-[56px]
-            transition-all duration-75
-            ${canSubmit 
-              ? 'bg-green-500 hover:bg-green-600 active:bg-green-700 text-white cursor-pointer shadow-lg hover:shadow-xl active:scale-95' 
-              : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}
-          `}
-        >
-          {canSubmit ? (
-            <>
-              <span className="hidden sm:inline">✅ SUBMIT</span>
-              <span className="sm:hidden">✅ Submit</span>
-            </>
-          ) : (
-            <>
-              <span className="hidden sm:inline">⏳ Complete the sequence...</span>
-              <span className="sm:hidden">⏳ Complete...</span>
-            </>
-          )}
-        </button>
+      {/* Status indicator when sequence complete (auto-submitting) */}
+      {isInputPhase && canSubmit && (
+        <div className="text-center animate-pulse">
+          <span className="text-yellow-400 font-bold text-lg">⏳ Checking...</span>
+        </div>
       )}
       
       {/* Result Display (Step 2) */}
